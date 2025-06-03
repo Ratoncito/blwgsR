@@ -5,7 +5,7 @@
 \title{Parse PacBio Reads}
 \usage{
 parse_reads(
-  file.locs,
+  input,
   out.file,
   plot = FALSE,
   P5element = "AATGATACGGCGACCACCGAGATCTACAC",
@@ -33,7 +33,7 @@ parse_reads(
 )
 }
 \arguments{
-\item{file.locs}{Path to the input file}
+\item{input}{Path to the input file}
 
 \item{out.file}{the location of the output file, where you want your results to be saved #TODO do we want this or should we just return the table}
 

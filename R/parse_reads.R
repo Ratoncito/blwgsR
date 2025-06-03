@@ -5,7 +5,7 @@
 #' it extracts the insert, sample ID and barcode ID
 #' 
 #'
-#' @param file.locs Path to the input file
+#' @param input Path to the input file
 #' @param out.file the location of the output file, where you want your results to be saved #TODO do we want this or should we just return the table
 #' @param plot boolean of if you want plots to be created along the way to visualize the process
 #' @param P5element TODO is this still necessary?
@@ -29,7 +29,7 @@
 #' @param file.format if the file is in fastq or not, fasta?
 #' @return A dataframe containing the insert, barcode ID, sample ID, and direction of the insert 
 #' @export
-parse_reads <- function(file.locs, #ist("data/lima.fl.5p--3p.fastq", "data/m54328U_241216_223053.lima.fl.5p--3p.fastq")
+parse_reads <- function(input, #List("data/lima.fl.5p--3p.fastq", "data/m54328U_241216_223053.lima.fl.5p--3p.fastq")
                         out.file,#"results/all_data_htt_hits_info3.csv"
                         plot = FALSE, 
                         P5element = "AATGATACGGCGACCACCGAGATCTACAC",
@@ -67,15 +67,30 @@ SampleIndex_WhiteList <- SampleIndex_WhiteList[SampleIndex_WhiteList$sample %in%
 #setwd("/net/bmc-lab4/data/kellis/users/sfass/projects/HD")
 message(paste("working directory: ", getwd()))
 
+if(is(input, "CharacterList")){
 
-#read in the sequences
-# Read nucleotide sequences from a FASTQ file
-#TODO make this ingestions just take a list of data locations
-d <-  do.call(c, lapply(file.locs, function(file, format = file.format){
+  #read in the sequences
+  # Read nucleotide sequences from a FASTQ file
+  #TODO make this ingestions just take a list of data locations
+  d <-  do.call(c, lapply(input, function(file, format = file.format){
+    message(paste0("reading: ", file))
+    Biostrings::readDNAStringSet(file, format = format)
+  }))
+  message(paste0(length(input), " files loaded"))
+
+}
+if(is(input, "Character")){
+  
   message(paste0("reading: ", file))
-  Biostrings::readDNAStringSet(file, format = format)
-}))
-message(paste0(length(file.locs), " files loaded"))
+  d <- Biostrings::readDNAStringSet(file, format = format)
+  message("file loaded")
+  
+} 
+if(is(input, "DNAStringSet")){
+  d <- input
+}else{
+  errorCondition("only accepts character lists, characters, or DNAStringSet objects")
+}
 
 message("\n\n\n================================#| STEP 1: FILTERING |#================================")
 
@@ -259,19 +274,6 @@ d <- d[names(d) %in% names(barcodes)]
 message(paste("barcode whitelist filtered reads remaining: ", length(d)))
 
 
-###STEP 2.3 - extract the inserts, TODO do I need to do any filtering here? should I do alignment here? 
-message("================================#| STEP 2.3: INSERT EXTRACTION |#================================")
-
-#extract the inserts 
-inserts <- Biostrings::subseq(d, 
-                  start = BiocGenerics::unlist(startIndex(Biostrings::vmatchPattern(Read1N, d, max.mismatch = Read1N.max.mm))),
-                  end = BiocGenerics::unlist(Biostrings::endIndex(Biostrings::vmatchPattern(Read2N, d, max.mismatch = Read2N.max.mm))))
-
-message(paste("Insert mean BiocGenerics::width:", mean(BiocGenerics::width(inserts))))
-message(paste("Insert median BiocGenerics::width:", median(BiocGenerics::width(inserts))))
-message(paste("Insert min BiocGenerics::width:", min(BiocGenerics::width(inserts))))
-message(paste("Insert max BiocGenerics::width:", max(BiocGenerics::width(inserts))))
-
 #TODO make a cooler plot
 if(plot){
   graphics::hist(BiocGenerics::width(inserts))
@@ -280,17 +282,24 @@ if(plot){
 ###STEP 2.4 - extract the sampleid
 message("\n\n\n================================#| STEP 2.3: SAMPLEID EXTRACTION |#================================")
 
+message("1")
 #get the sample ID
 sampleids <- Biostrings::subseq(d, 
                     start = BiocGenerics::unlist(Biostrings::endIndex(Biostrings::vmatchPattern(Read2N, d, max.mismatch = Read2N.max.mm))) + 1,
                     end = BiocGenerics::width(d))
 
+message("2")
+
 #make sure all the sampleids are the right length
 stopifnot(all(BiocGenerics::width(sampleids) == sampleid.length)) 
+
+message("3")
 
 #check for exact matches within the SampleIndex whitelist
 samp_exact_matches <- sampleids %in% SampleIndex_WhiteList$index
 message(paste("sampleids recovered from whitelist with exact matches: ", sum(samp_exact_matches)))
+
+message("4")
 
 #check for close sampleid index matches 
 samp_close_match <- filter_barcodes(sampleids[!samp_exact_matches], SampleIndex_WhiteList$index)
@@ -301,6 +310,8 @@ sampleids <- c(samp_close_match, sampleids[samp_exact_matches])
 
 #info about the barcode filtering 
 message(paste("sampleids recovered from whitelist total: ", length(sampleids)))
+
+message("5")
 
 #get unique SampleIndexes
 usid <- BiocGenerics::unique(sampleids)
@@ -357,6 +368,19 @@ if(plot){
     ) +
     theme_minimal()
 }
+
+###STEP 2.3 - extract the inserts, TODO do I need to do any filtering here? should I do alignment here? 
+message("================================#| STEP 2.3: INSERT EXTRACTION |#================================")
+
+#extract the inserts 
+inserts <- Biostrings::subseq(d, 
+                              start = BiocGenerics::unlist(startIndex(Biostrings::vmatchPattern(Read1N, d, max.mismatch = Read1N.max.mm))),
+                              end = BiocGenerics::unlist(Biostrings::endIndex(Biostrings::vmatchPattern(Read2N, d, max.mismatch = Read2N.max.mm))))
+
+message(paste("Insert mean BiocGenerics::width:", mean(BiocGenerics::width(inserts))))
+message(paste("Insert median BiocGenerics::width:", median(BiocGenerics::width(inserts))))
+message(paste("Insert min BiocGenerics::width:", min(BiocGenerics::width(inserts))))
+message(paste("Insert max BiocGenerics::width:", max(BiocGenerics::width(inserts))))
 
 
 ###STEP 3 - "demultiplex" the samples 
