@@ -203,7 +203,7 @@ parse_reads <- function(input, #List("data/lima.fl.5p--3p.fastq", "data/m54328U_
       }else{
         return(NA)
       }
-    }, mc.cores = detectCores() %/% 2) #If we are going over out memory budget we can reduce this futher, 
+    }, mc.cores = parallel::detectCores() %/% 2) #If we are going over out memory budget we can reduce this futher, 
     
     #BiocGenerics::unlist, remove barcodes without a close match, and convert back to desired format
     valid_barcodes <- BiocGenerics::unlist(valid_barcodes) #I guess the name sticks with the barcode
