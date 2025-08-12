@@ -12,6 +12,7 @@
 devtools::install_github("ratoncito/blwgsR")
 
 
+### R demo
 ### test run the function
 
 #we provide a example dataset from the Fitzwalter 2025 paper, this is a subset of 100,000 reads from this paper
