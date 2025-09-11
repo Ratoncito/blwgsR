@@ -8,7 +8,7 @@
 #' @param infile Path to the input file
 #' @return A matrix of the infile
 #' @export
-demultiplex_reads <- function (reads, out.file) 
+demultiplex_reads <- function (reads, out.file = "None") 
 {
   if (is.character(reads)) {
     info <- read.csv(out.file)
