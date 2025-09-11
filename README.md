@@ -9,20 +9,13 @@
 ### 📦 R Installation
 
 ```R
-devtools::install_github("ratoncito/blwgsR")
+devtools::install_github("ratoncito/blwgsR", force = TRUE)
+library(blwgsR)
+
+#parse the read into inserts barcodes sampleIDs 
+read_info <- parse_reads(blwgsR::Fitzwalter2025, out.file = "test.csv")
+
+#count CAG repeats and demultiplex the reads into cells 
+cell_info <- demultiplex_reads(reads = read_info, out.file = "None")
 
 
-### R demo
-### test run the function
-
-#we provide a example dataset from the Fitzwalter 2025 paper, this is a subset of 100,000 reads from this paper
-
-#this function has many optional inputs, for looking at the HTT_exon1 gene these options work well, for other genes this will require different inputs, for investigating all genes see the _ function (in progress)
-read_info <- parse_reads()
-
-#now that we have the reads we can count the CAG repeats like so
-
-read_info$cag_repeats <- count_cags()
-
-#now we can demultiplex the reads into cells
-cell_info <- demultiplex()
