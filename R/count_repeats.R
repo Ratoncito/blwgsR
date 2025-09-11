@@ -37,7 +37,7 @@ count_cag_repeats <- function(i1, min.repeats = 3) {
   }
   
   # Apply the function in parallel using parallel::mclapply
-  result <- parallel::mclapply(rownames(i1), count_single_sequence, mc.cores = detectCores() - 1)
+  result <- parallel::mclapply(rownames(i1), count_single_sequence, mc.cores = parallel::detectCores() - 1)
   
   # Simplify the result to a vector
   result <- BiocGenerics::unlist(result)
