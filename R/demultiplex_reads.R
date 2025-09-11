@@ -15,11 +15,14 @@ demultiplex_reads <- function(reads, out.file){
     info <- reads
   }
   message("\n\n\n================================#| STEP 5: DEMULTIPLEXING |#================================")
+  
   # Create a function for getting the mode
   getmode <- function(v) {
     uniqv <- BiocGenerics::unique(v)
     uniqv[which.max(tabulate(match(v, uniqv)))]
   }
+  
+  message(paste("number of reads: ", nrow(info)))
   
   #merge cell information with sample key
   info <- merge(info, SampleIndex_WhiteList[,c(1,3)], by.x = "sampleid", by.y = "index")
