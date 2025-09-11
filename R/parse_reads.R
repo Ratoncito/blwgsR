@@ -127,7 +127,7 @@ parse_reads <- function(input, #List("data/lima.fl.5p--3p.fastq", "data/m54328U_
   #TODO we can limit the search space to just the last 100bp?
   #remove all reads that dont have a spacer starting at location 17
   #TODO should we do spacer plus read1?
-  d <-  d[BiocGenerics::unlist(startIndex(Biostrings::vmatchPattern(Spacer, d, max.mismatch = Spacer.max.mm))) == barcode.length + 1]
+  d <-  d[BiocGenerics::unlist(Biostrings::startIndex(Biostrings::vmatchPattern(Spacer, d, max.mismatch = Spacer.max.mm))) == barcode.length + 1]
   message(paste("Reads 10XBarcode position filtered: ", length(d)))
   
   #check for HTT gene accounting for both forward and reverse complement strands
@@ -392,8 +392,8 @@ parse_reads <- function(input, #List("data/lima.fl.5p--3p.fastq", "data/m54328U_
   
   #new code
   inserts <- Biostrings::subseq(d, 
-                    start = unlist(endIndex(vmatchPattern(paste0(Spacer,Read1N), d, max.mismatch = Spacer.max.mm + Read1N.max.mm))) + 1,
-                    end = unlist(startIndex(vmatchPattern(Read2N, d, max.mismatch = Read2N.max.mm))) - 1)
+                    start = unlist(biostrings::endIndex(biostrings::vmatchPattern(paste0(Spacer,Read1N), d, max.mismatch = Spacer.max.mm + Read1N.max.mm))) + 1,
+                    end = unlist(biostrings::startIndex(biostrings::vmatchPattern(Read2N, d, max.mismatch = Read2N.max.mm))) - 1)
   
   message(paste("Insert mean BiocGenerics::width:", mean(BiocGenerics::width(inserts))))
   message(paste("Insert median BiocGenerics::width:", median(BiocGenerics::width(inserts))))

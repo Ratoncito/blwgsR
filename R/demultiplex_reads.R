@@ -8,8 +8,12 @@
 #' @param infile Path to the input file
 #' @return A matrix of the infile
 #' @export
-demultiplex_reads <- function(){
-  info <- read.csv("results/all_data_htt_hits_info3.csv")
+demultiplex_reads <- function(reads, out.file){
+  if(is.character(reads)){
+    info <- read.csv("results/all_data_htt_hits_info3.csv")
+  }else{
+    info <- reads
+  }
   message("\n\n\n================================#| STEP 5: DEMULTIPLEXING |#================================")
   # Create a function for getting the mode
   getmode <- function(v) {
@@ -59,17 +63,22 @@ demultiplex_reads <- function(){
   message(paste("Max number of reads per cell: ", max(cell_info$number_of_reads)))
   message(paste("Mean number of reads per cell: ", mean(cell_info$number_of_reads)))
   
-  write.csv(cell_info, file = "results/all_data_htt_hits_cell_info3.csv")
-  message("cell level info saved")
-  
-  if(plot){
-    ggplot2::ggplot(data = cell_info, aes(x = cag_repeats_mode, y = cag_repeats_sd)) + geom_point()
-    
-    ggplot2::ggplot(data = cell_info, aes(x = log10(cag_repeats_mode), y = log10(cag_repeats_var + 1))) + 
-      geom_point() + 
-      geom_smooth(method = "lm", color = "red") + 
-      geom_smooth() + 
-      theme_bw()
+  if(out.file == "None"){
+    return(cell_info)
+  }else{
+    write.csv(cell_info, file = out.file)
+    message("cell level info saved")
   }
+  
+  
+  # if(plot){
+  #   ggplot2::ggplot(data = cell_info, aes(x = cag_repeats_mode, y = cag_repeats_sd)) + geom_point()
+  #   
+  #   ggplot2::ggplot(data = cell_info, aes(x = log10(cag_repeats_mode), y = log10(cag_repeats_var + 1))) + 
+  #     geom_point() + 
+  #     geom_smooth(method = "lm", color = "red") + 
+  #     geom_smooth() + 
+  #     theme_bw()
+  # }
   
 }
