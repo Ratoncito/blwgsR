@@ -392,8 +392,8 @@ parse_reads <- function(input, #List("data/lima.fl.5p--3p.fastq", "data/m54328U_
   
   #new code
   inserts <- Biostrings::subseq(d, 
-                    start = unlist(biostrings::endIndex(biostrings::vmatchPattern(paste0(Spacer,Read1N), d, max.mismatch = Spacer.max.mm + Read1N.max.mm))) + 1,
-                    end = unlist(biostrings::startIndex(biostrings::vmatchPattern(Read2N, d, max.mismatch = Read2N.max.mm))) - 1)
+                    start = unlist(Biostrings::endIndex(Biostrings::vmatchPattern(paste0(Spacer,Read1N), d, max.mismatch = Spacer.max.mm + Read1N.max.mm))) + 1,
+                    end = unlist(Biostrings::startIndex(Biostrings::vmatchPattern(Read2N, d, max.mismatch = Read2N.max.mm))) - 1)
   
   message(paste("Insert mean BiocGenerics::width:", mean(BiocGenerics::width(inserts))))
   message(paste("Insert median BiocGenerics::width:", median(BiocGenerics::width(inserts))))
