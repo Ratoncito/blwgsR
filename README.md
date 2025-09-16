@@ -19,4 +19,4 @@ read_info <- parse_reads(blwgsR::Fitzwalter2025, out.file = "test.csv")
 cell_info <- demultiplex_reads(reads = read_info, out.file = "None")
 ```
 
-![chromium_barcode_info.png]
+![/chromium_barcode_info.png]
