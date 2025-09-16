@@ -19,7 +19,7 @@ read_info <- parse_reads(blwgsR::Fitzwalter2025, out.file = "test.csv")
 cell_info <- demultiplex_reads(reads = read_info, out.file = "None")
 ```
 
-![./chromium_barcode_info.png]
+![construct information](./chromium_barcode_info.png)
 
 
 ![Screenshot of a comment on a GitHub issue showing an image, added in the Markdown, of an Octocat smiling and raising a tentacle.](https://myoctocat.com/assets/images/base-octocat.svg)
