@@ -3,6 +3,8 @@
 ## BootLeg Whole Genome Sequencing R package #TODO change this name maybe, something that incorprates ATAC and RNAseq, pacbio, and 10X
 *an R package for parsing and combining pacbio long read sequencing with 10X multiomic data*
 
+The function of this package essentially parses 10X multiome ATAC reads to extract the DNA. There are also other basic functions for demultiplexing and counting CAG repeats.
+
 *R*
 ---
 
