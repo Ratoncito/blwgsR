@@ -54,6 +54,7 @@ parse_reads <- function(input, #List("data/lima.fl.5p--3p.fastq", "data/m54328U_
                         file.format = "fastq"){
   
   #TODO put in checks to make sure in and out files / paths exist
+  message("foo")
   
   ###STEP 0 setup
   message("================================#| STEP 0: SETUP |#================================")
@@ -215,7 +216,7 @@ parse_reads <- function(input, #List("data/lima.fl.5p--3p.fastq", "data/m54328U_
   
   #Get all the exact matches between the barcodes and the whitelist
   exact_matches <- as.character(barcodes) %in% Barcode10X_WhiteList
-  message(paste("Barcodes recovered from whitelist with exact matches: ", sum(exact_matches)))
+  message(paste("Barcodes recovered from whitelist with exact matches: ", sum(exact_matches))) #add in to the dataframe .. etc
   
   #get all the matches that are not exact, that are within 1 mismatch, but only have 1 unique match in the whitelist
   close_matches <- filter_barcodes(barcodes[!exact_matches], Barcode10X_WhiteList)
@@ -413,6 +414,12 @@ parse_reads <- function(input, #List("data/lima.fl.5p--3p.fastq", "data/m54328U_
   inserts.df <- data.frame(insert = as.character(inserts))
   sampleids.df <- data.frame(sampleid = as.character(sampleids))
   strand.df <- data.frame(strand = as.character(d@elementMetadata$strand))
+  
+  #ensure there are no duplicate names
+  names(barcodes) <- make.unique(names(barcodes), sep = ".")
+  names(inserts) <- make.unique(names(inserts), sep = ".")
+  names(sampleids) <- make.unique(names(sampleids), sep = ".")
+  names(d) <- make.unique(names(d), sep = ".")
   
   # Assign rownames explicitly (e.g., from original names of sequences)
   rownames(barcodes.df) <- names(barcodes)
