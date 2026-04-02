@@ -71,29 +71,35 @@ parse_reads <- function(input, #List("data/lima.fl.5p--3p.fastq", "data/m54328U_
   #setwd("/net/bmc-lab4/data/kellis/users/sfass/projects/HD")
   message(paste("working directory: ", getwd()))
   
-  if(is(input, "CharacterList")){
-    
-    #read in the sequences
-    # Read nucleotide sequences from a FASTQ file
-    #TODO make this ingestions just take a list of data locations
-    d <-  do.call(c, lapply(input, function(file, format = file.format){
-      message(paste0("reading: ", file))
-      Biostrings::readDNAStringSet(file, format = format)
-    }))
-    message(paste0(length(input), " files loaded"))
-    
-  }
-  if(is(input, "Character")){
-    
-    message(paste0("reading: ", file))
-    d <- Biostrings::readDNAStringSet(file, format = format)
-    message("file loaded")
-    
-  } 
-  if(is(input, "DNAStringSet")){
+  # -------------------------
+  # Input handling
+  # -------------------------
+  if (inherits(input, "DNAStringSet")) {
     d <- input
-  }else{
-    errorCondition("only accepts character lists, characters, or DNAStringSet objects")
+    message("input is DNAStringSet")
+  } else if (is.character(input) && length(input) == 1L) {
+    message(paste0("reading: ", input))
+    d <- Biostrings::readDNAStringSet(input, format = file.format)
+    message("1 file loaded")
+  } else if (is.character(input) && length(input) > 1L) {
+    d <- do.call(
+      c,
+      lapply(input, function(file) {
+        message(paste0("reading: ", file))
+        Biostrings::readDNAStringSet(file, format = file.format)
+      })
+    )
+    message(paste0(length(input), " files loaded"))
+  } else {
+    stop("input must be a DNAStringSet, a file path, or a character vector of file paths.")
+  }
+  
+  if (length(d) == 0L) {
+    stop("No reads loaded.")
+  }
+  
+  if (is.null(names(d))) {
+    names(d) <- paste0("read_", seq_along(d))
   }
   
   message("\n\n\n================================#| STEP 1: FILTERING |#================================")
