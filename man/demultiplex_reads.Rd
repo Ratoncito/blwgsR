@@ -4,7 +4,7 @@
 \alias{demultiplex_reads}
 \title{Load a Matrix}
 \usage{
-demultiplex_reads()
+demultiplex_reads(reads, out.file = "None")
 }
 \arguments{
 \item{infile}{Path to the input file}
